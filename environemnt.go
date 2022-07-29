@@ -57,3 +57,8 @@ func (e *Environment) CleanUp() {
 func (e *Environment) RootDir() *paths.Path {
 	return e.rootDir
 }
+
+// SharedDownloadsDir return the shared directory for downloads
+func (e *Environment) SharedDownloadsDir() *paths.Path {
+	return e.downloadsDir
+}
