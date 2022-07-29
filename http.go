@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/arduino/go-paths-helper"
+	"github.com/stretchr/testify/require"
 )
 
 // HTTPServeFile spawn an http server that serve a single file. The server
@@ -20,12 +21,13 @@ func (env *Environment) HTTPServeFile(port uint16, path *paths.Path) *url.URL {
 		Handler: mux,
 	}
 
+	t := env.T()
 	fileURL, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%d/%s", port, path.Base()))
-	env.t.NoError(err)
+	require.NoError(t, err)
 
 	go func() {
 		err := server.ListenAndServe()
-		env.t.Equal(err, http.ErrServerClosed)
+		require.Equal(t, err, http.ErrServerClosed)
 	}()
 
 	env.RegisterCleanUpCallback(func() {

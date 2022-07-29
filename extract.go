@@ -5,6 +5,7 @@ import (
 
 	"github.com/arduino/go-paths-helper"
 	"github.com/codeclysm/extract/v3"
+	"github.com/stretchr/testify/require"
 )
 
 // Extract extracts a tarball to a directory named as the archive
@@ -15,12 +16,14 @@ func (e *Environment) Extract(archive *paths.Path) *paths.Path {
 		return destDir
 	}
 
+	t := e.T()
+
 	file, err := archive.Open()
-	e.t.NoError(err)
+	require.NoError(t, err)
 	defer file.Close()
 
 	err = extract.Archive(context.Background(), file, destDir.String(), nil)
-	e.t.NoError(err)
+	require.NoError(t, err)
 
 	return destDir
 }

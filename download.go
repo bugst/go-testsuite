@@ -9,14 +9,17 @@ import (
 	"path/filepath"
 
 	"github.com/arduino/go-paths-helper"
+	"github.com/stretchr/testify/require"
 )
 
 // Download downloads a file from a URL and returns the path to the downloaded file.
 // The file is saved and cached in a shared downloads directory.
 // If the file already exists, it is not downloaded again.
 func (e *Environment) Download(rawURL string) *paths.Path {
+	t := e.T()
+
 	url, err := url.Parse(rawURL)
-	e.t.NoError(err)
+	require.NoError(t, err)
 
 	filename := filepath.Base(url.Path)
 	if filename == "/" {
@@ -35,23 +38,23 @@ func (e *Environment) Download(rawURL string) *paths.Path {
 
 	// Download file
 	resp, err := http.Get(rawURL)
-	e.t.NoError(err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	// Copy data in a temp file
 	tmp := resource.Parent().Join(resource.Base() + ".tmp")
 	out, err := tmp.Create()
-	e.t.NoError(err)
+	require.NoError(t, err)
 	defer tmp.Remove()
 	defer out.Close()
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
-	e.t.NoError(err)
-	e.t.NoError(out.Close())
+	require.NoError(t, err)
+	require.NoError(t, out.Close())
 
 	// Rename the file to its final destination
-	e.t.NoError(tmp.Rename(resource))
+	require.NoError(t, tmp.Rename(resource))
 
 	return resource
 }

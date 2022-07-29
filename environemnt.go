@@ -14,7 +14,7 @@ var ProjectName = "go-testsuite"
 type Environment struct {
 	rootDir      *paths.Path
 	downloadsDir *paths.Path
-	t            *require.Assertions
+	t            *testing.T
 	cleanUp      func()
 }
 
@@ -33,7 +33,7 @@ func NewEnvironment(t *testing.T) *Environment {
 	return &Environment{
 		rootDir:      rootDir,
 		downloadsDir: downloadsDir,
-		t:            require.New(t),
+		t:            t,
 		cleanUp: func() {
 			require.NoError(t, rootDir.RemoveAll())
 		},
@@ -62,4 +62,9 @@ func (e *Environment) RootDir() *paths.Path {
 // SharedDownloadsDir return the shared directory for downloads
 func (e *Environment) SharedDownloadsDir() *paths.Path {
 	return e.downloadsDir
+}
+
+// T returns the testing environment
+func (e *Environment) T() *testing.T {
+	return e.t
 }
