@@ -28,7 +28,7 @@ func (env *Environment) HTTPServeFile(port uint16, path *paths.Path) *url.URL {
 		env.t.Equal(err, http.ErrServerClosed)
 	}()
 
-	env.addCleanUp(func() {
+	env.RegisterCleanUpCallback(func() {
 		server.Close()
 	})
 

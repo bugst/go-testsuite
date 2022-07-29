@@ -40,7 +40,8 @@ func NewEnvironment(t *testing.T) *Environment {
 	}
 }
 
-func (e *Environment) addCleanUp(newCleanUp func()) {
+// RegisterCleanUpCallback adds a clean up function to the clean up chain
+func (e *Environment) RegisterCleanUpCallback(newCleanUp func()) {
 	previousCleanUp := e.cleanUp
 	e.cleanUp = func() {
 		newCleanUp()
