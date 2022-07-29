@@ -15,6 +15,7 @@ type Environment struct {
 	rootDir      *paths.Path
 	downloadsDir *paths.Path
 	t            *require.Assertions
+	cleanUp      func()
 }
 
 // SharedDir returns the shared downloads directory.
@@ -33,15 +34,26 @@ func NewEnvironment(t *testing.T) *Environment {
 		rootDir:      rootDir,
 		downloadsDir: downloadsDir,
 		t:            require.New(t),
+		cleanUp: func() {
+			require.NoError(t, rootDir.RemoveAll())
+		},
+	}
+}
+
+func (e *Environment) addCleanUp(newCleanUp func()) {
+	previousCleanUp := e.cleanUp
+	e.cleanUp = func() {
+		newCleanUp()
+		previousCleanUp()
 	}
 }
 
 // CleanUp removes the test environment.
 func (e *Environment) CleanUp() {
-	e.t.NoError(e.rootDir.RemoveAll())
+	e.cleanUp()
 }
 
-// Root returns the root dir of the environment.
-func (e *Environment) Root() *paths.Path {
+// RootDir returns the root dir of the environment.
+func (e *Environment) RootDir() *paths.Path {
 	return e.rootDir
 }
